@@ -83,16 +83,23 @@
 					contentType : false, 
 					// функция успешного ответа сервера
 					success: function (_data) {
-						console.log("Авторизация прошла успешно, id: " +_data);
-						if(_data == "") {
-							loading.style.display = "none";
-							button.className = "button";
+						loading.style.display = "none";
+						button.className = "button";
+
+						if (_data === "blocked") {
+							alert("Ваш аккаунт заблокирован из-за большого количества неудачных попыток (5+). Обратитесь в поддержку.");
+						} 
+						else if (_data === "flood") {
+							alert("Слишком много запросов! Подождите секунду.");
+						}
+						else if (_data === "wrong" || _data === "") {
 							alert("Логин или пароль не верный.");
-						} else {
+						} 
+						else {
+							// Если пришел MD5 хэш (успех)
+							console.log("Авторизация прошла успешно");
 							localStorage.setItem("token", _data);
 							location.reload();
-							loading.style.display = "none";
-							button.className = "button";
 						}
 					},
 					// функция ошибки
