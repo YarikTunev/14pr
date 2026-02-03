@@ -89,15 +89,18 @@
 								contentType : false, 
 								// функция успешного ответа сервера
 								success: function (_data) {
-									console.log("Авторизация прошла успешно, id: " +_data);
-									if(_data == -1) {
+									loading.style.display = "none";
+									button.className = "button";
+
+									if (_data == "-1") {
 										alert("Пользователь с таким логином существует.");
-										loading.style.display = "none";
-										button.className = "button";
+									} else if (_data == "-2") {
+										alert("Слишком много попыток регистрации! Подождите 15 секунд.");
+									} else if (_data.indexOf("SQL Error") !== -1) {
+										console.error(_data); 
+										alert("Ошибка базы данных. Проверьте консоль.");
 									} else {
-										location.reload();
-										loading.style.display = "none";
-										button.className = "button";
+										location.href = "index.php"; 
 									}
 								},
 								// функция ошибки

@@ -1,24 +1,32 @@
 <?php
-	session_start();
-	include("../settings/connect_datebase.php");
-	
-	$login = $_POST['login'];
-	$password = $_POST['password'];
-	
-	// ищем пользователя
-	$query_user = $mysqli->query("SELECT * FROM `users` WHERE `login`='".$login."'");
-	$id = -1;
-	
-	if($user_read = $query_user->fetch_row()) {
-		echo $id;
-	} else {
-		$mysqli->query("INSERT INTO `users`(`login`, `password`, `roll`) VALUES ('".$login."', '".$password."', 0)");
-		
-		$query_user = $mysqli->query("SELECT * FROM `users` WHERE `login`='".$login."' AND `password`= '".$password."';");
-		$user_new = $query_user->fetch_row();
-		$id = $user_new[0];
-			
-		if($id != -1) $_SESSION['user'] = $id; // запоминаем пользователя
-		echo $id;
-	}
+session_start();
+include("../settings/connect_datebase.php");
+$current_time = time();
+if (isset($_SESSION['last_reg_time']) && ($current_time - $_SESSION['last_reg_time']) < 15) {
+    die("-2"); 
+}
+$_SESSION['last_reg_time'] = $current_time;
+
+if (!isset($_POST['login']) || !isset($_POST['password'])) {
+    die("Data missing");
+}
+
+$login = $mysqli->real_escape_string($_POST['login']);
+$password = $_POST['password']; 
+
+$query_user = $mysqli->query("SELECT id FROM `users` WHERE `login`='$login'");
+
+if($query_user && $query_user->num_rows > 0) {
+    echo "-1"; 
+} else {
+    $sql = "INSERT INTO `users`(`login`, `password`, `roll`, `attempts`) VALUES ('$login', '$password', 0, 0)";
+    
+    if ($mysqli->query($sql)) {
+        $id = $mysqli->insert_id;
+        $_SESSION['user'] = $id;
+        echo $id;
+    } else {
+        echo "SQL Error: " . $mysqli->error;
+    }
+}
 ?>
