@@ -43,6 +43,10 @@
 					<input name="_password" type="password" placeholder="" onkeypress="return PressToEnter(event)"/>
 					<div class = "sub-name">Повторите пароль:</div>
 					<input name="_passwordCopy" type="password" placeholder="" onkeypress="return PressToEnter(event)"/>
+					<div class="sub-name">Контрольный вопрос (например, имя вашей кошки):</div>
+					<input name="_question" type="text" />
+					<div class="sub-name">Ответ:</div>
+					<input name="_answer" type="text" />
 					
 					<a href="login.php">Вернуться</a>
 					<input type="button" class="button" value="Зайти" onclick="RegIn()" style="margin-top: 0px;"/>
@@ -65,54 +69,42 @@
 				var _login = document.getElementsByName("_login")[0].value;
 				var _password = document.getElementsByName("_password")[0].value;
 				var _passwordCopy = document.getElementsByName("_passwordCopy")[0].value;
-				
-				if(_login != "") {
-					if(_password != "") {
-						if(_password == _passwordCopy) {
-							loading.style.display = "block";
-							button.className = "button_diactive";
-							
-							var data = new FormData();
-							data.append("login", _login);
-							data.append("password", _password);
-							
-							// AJAX запрос
-							$.ajax({
-								url         : 'ajax/regin_user.php',
-								type        : 'POST', // важно!
-								data        : data,
-								cache       : false,
-								dataType    : 'html',
-								// отключаем обработку передаваемых данных, пусть передаются как есть
-								processData : false,
-								// отключаем установку заголовка типа запроса. Так jQuery скажет серверу что это строковой запрос
-								contentType : false, 
-								// функция успешного ответа сервера
-								success: function (_data) {
-									loading.style.display = "none";
-									button.className = "button";
+				var _question = document.getElementsByName("_question")[0].value;
+				var _answer = document.getElementsByName("_answer")[0].value;
 
-									if (_data == "-1") {
-										alert("Пользователь с таким логином существует.");
-									} else if (_data == "-2") {
-										alert("Слишком много попыток регистрации! Подождите 15 секунд.");
-									} else if (_data.indexOf("SQL Error") !== -1) {
-										console.error(_data); 
-										alert("Ошибка базы данных. Проверьте консоль.");
-									} else {
-										location.href = "index.php"; 
-									}
-								},
-								// функция ошибки
-								error: function( ){
-									console.log('Системная ошибка!');
-									loading.style.display = "none";
-									button.className = "button";
+				if(_login != "" && _password != "" && _question != "" && _answer != "") {
+					if(_password == _passwordCopy) {
+						loading.style.display = "block";
+						button.className = "button_diactive";
+
+						var data = new FormData();
+						data.append("login", _login);
+						data.append("password", _password);
+						data.append("question", _question);
+						data.append("answer", _answer);
+
+						$.ajax({
+							url: 'ajax/regin_user.php',
+							type: 'POST',
+							data: data,
+							processData: false,
+							contentType: false, 
+							success: function (_data) {
+								if(_data == "-1") {
+									alert("Логин занят.");
+								} else if(_data == "-2") {
+									alert("Подождите 15 секунд перед следующей попыткой.");
+								} else if (!isNaN(_data)) {
+									location.href = "index.php";
+								} else {
+									console.log(_data); 
 								}
-							});
-						} else alert("Пароли не совподают.");
-					} else alert("Введите пароль.");
-				} else alert("Введите логин.");
+								loading.style.display = "none";
+								button.className = "button";
+							}
+						});
+					} else alert("Пароли не совпадают.");
+				} else alert("Заполните все поля, включая контрольный вопрос!");
 			}
 			
 			function PressToEnter(e) {
