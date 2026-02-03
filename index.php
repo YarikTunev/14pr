@@ -97,11 +97,18 @@
 					processData : false,
 					contentType : false, 
 					success: function (_data) {
-						console.log(_data);
-						sender.parentElement.children[0].value = "";
-						sender.parentElement.parentElement.children[2].innerHTML += "<div>" + Message + "</div>";
-
+						if (_data === "flood") {
+							alert("Пишите помедленнее! Раз в 5 сек");
+						} else if (_data === "error_auth") {
+							alert("Нужно авторизоваться.");
+						} else {
+							console.log("Опубликовано");
+							sender.parentElement.children[0].value = "";
+							let newMsg = $("<div>").text(Message); 
+							$(sender.parentElement.parentElement.children[2]).append(newMsg);
+						}
 					},
+
 					// функция ошибки
 					error: function( ){
 						console.log('Системная ошибка!');
