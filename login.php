@@ -94,9 +94,14 @@
 						}
 						else if (_data === "wrong" || _data === "") {
 							alert("Логин или пароль не верный.");
+						}
+						else if (_data === "blocked_ip") {
+							alert("Ваш IP временно заблокирован из-за подозрений в брутфорсе. Попробуйте через 15 минут.");
 						} 
+						else if (_data === "blocked") {
+							alert("Ваш аккаунт заблокирован...");
+						}
 						else {
-							// Если пришел MD5 хэш (успех)
 							console.log("Авторизация прошла успешно");
 							localStorage.setItem("token", _data);
 							location.reload();
