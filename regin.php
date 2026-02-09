@@ -90,15 +90,16 @@
 							processData: false,
 							contentType: false, 
 							success: function (_data) {
-								if(_data == "-1") {
+								if(_data === "blocked_ip") {
+									alert("С вашего IP замечена подозрительная активность. Регистрация заблокирована на 30 минут.");
+								} else if(_data == "-1") {
 									alert("Логин занят.");
 								} else if(_data == "-2") {
 									alert("Подождите 15 секунд перед следующей попыткой.");
 								} else if (!isNaN(_data)) {
 									location.href = "index.php";
-								} else {
-									console.log(_data); 
 								}
+								
 								loading.style.display = "none";
 								button.className = "button";
 							}
